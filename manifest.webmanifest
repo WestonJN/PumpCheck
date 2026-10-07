@@ -1,0 +1,16 @@
+{
+  "name": "Pump Check",
+  "short_name": "Pump Check",
+  "description": "What South African petrol and diesel prices cost your vehicle.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#14181C",
+  "theme_color": "#14181C",
+  "lang": "en-ZA",
+  "icons": [
+    { "src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

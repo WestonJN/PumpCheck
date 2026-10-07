@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en-ZA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Petrol and Diesel Price Calculator South Africa (October 2026) | Pump Check</title>
+<meta name="description" data-dyn="desc" content="Check what South Africa's October 2026 petrol and diesel prices cost your car. Pick your vehicle and see your cost per fill-up, month and year.">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#14181C">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<link rel="canonical" href="https://example.github.io/pump-check/">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="styles.css">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Pump Check">
+<meta property="og:locale" content="en_ZA">
+<meta property="og:title" data-dyn="ogtitle" content="Petrol and Diesel Price Calculator South Africa (October 2026)">
+<meta property="og:description" data-dyn="ogdesc" content="Petrol 95 is R30.25 a litre inland from Wednesday 7 October 2026. See what it costs your car.">
+<meta property="og:url" content="https://example.github.io/pump-check/">
+<meta property="og:image" content="https://example.github.io/pump-check/assets/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Pump Check: what the fuel price costs you">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "@id": "https://example.github.io/pump-check/#app",
+      "name": "Pump Check",
+      "url": "https://example.github.io/pump-check/",
+      "description": "A free calculator that shows what South African petrol and diesel prices cost your vehicle per litre, fill-up, month and year.",
+      "applicationCategory": "UtilitiesApplication",
+      "operatingSystem": "Any",
+      "inLanguage": "en-ZA",
+      "areaServed": { "@type": "Country", "name": "South Africa" },
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "ZAR" },
+      "dateModified": "2026-10-06"
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "When do South African fuel prices change?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Petrol and diesel prices are adjusted on the first Wednesday of every month. The Department of Mineral and Petroleum Resources announces the change a few days earlier." }
+        },
+        {
+          "@type": "Question",
+          "name": "Why are diesel prices shown as wholesale?",
+          "acceptedAnswer": { "@type": "Answer", "text": "The government sets the wholesale diesel price only. Garages add their own margin, so the pump price differs from station to station. Pump Check lets you add your garage's extra rand per litre." }
+        },
+        {
+          "@type": "Question",
+          "name": "How does Pump Check work out my fuel cost?",
+          "acceptedAnswer": { "@type": "Answer", "text": "It multiplies the litres you use by the price per litre. Litres come from your distance and your vehicle's fuel use in litres per 100 km. Manufacturer figures are usually lower than real driving, so you can change the fuel use to match your own." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the difference between inland and coastal fuel prices?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Fuel is cheaper at the coast because it costs less to transport. Gauteng and other inland areas pay the inland price. Petrol 93 is sold inland only." }
+        }
+      ]
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<a class="skip" href="#calc">Skip to the calculator</a>
+<div class="wrap">
+  <header class="top">
+    <span class="brand">Pump Check</span>
+    <span class="tag">South Africa</span>
+  </header>
+
+  <main>
+    <section class="intro">
+      <h1>What the fuel price costs you</h1>
+      <p class="lede">Pick your vehicle and see what the latest petrol or diesel price means for every fill-up, month and year.</p>
+    </section>
+
+    <div id="stale" class="notice" role="status" hidden></div>
+    <div id="upcoming" class="notice soft" role="status" hidden></div>
+
+    <section class="board" aria-live="polite" aria-label="Selected fuel price">
+      <div class="lbl" id="boardLbl">Loading prices</div>
+      <div class="row">
+        <div class="big" id="bigPrice">R&ndash;</div>
+        <div class="delta" id="bigDelta" hidden></div>
+      </div>
+      <div class="was" id="was"></div>
+    </section>
+
+    <section class="card" id="calc" aria-labelledby="h-vehicle">
+      <h2 id="h-vehicle">Your vehicle</h2>
+      <div class="field">
+        <label for="vq">Search for your vehicle</label>
+        <div class="combo">
+          <input id="vq" type="text" role="combobox" aria-expanded="false" aria-controls="vlist" aria-autocomplete="list" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Try Hilux, Polo or Jimny" maxlength="60">
+          <ul id="vlist" role="listbox" aria-label="Matching vehicles" hidden></ul>
+        </div>
+      </div>
+      <p class="or">or choose from the list</p>
+      <div class="selects">
+        <label for="vmake">Make<select id="vmake"></select></label>
+        <label for="vmodel">Model<select id="vmodel"></select></label>
+        <label for="vvar">Variant<select id="vvar"></select></label>
+      </div>
+      <p class="summary" id="vsum"></p>
+    </section>
+
+    <section class="card" aria-labelledby="h-fuel">
+      <h2 id="h-fuel">Fuel and driving</h2>
+      <div class="seg" id="gradeSeg" role="group" aria-label="Fuel grade"></div>
+      <div class="seg" id="regSeg" role="group" aria-label="Region">
+        <button type="button" data-r="inland" aria-pressed="true">Inland (Gauteng)</button>
+        <button type="button" data-r="coast" aria-pressed="false">Coast</button>
+      </div>
+      <p class="hint" id="note" hidden></p>
+      <div class="fields">
+        <label for="km">Distance per month (km)<input id="km" type="number" inputmode="decimal" value="1500" min="0" max="100000"></label>
+        <label for="cons">Fuel use (l/100 km)<input id="cons" type="number" inputmode="decimal" value="5.4" min="0" max="40" step="0.1"></label>
+        <label for="tank">Tank size (litres)<input id="tank" type="number" inputmode="decimal" value="40" min="0" max="300"></label>
+        <label for="adj">Garage extra (R per litre)<input id="adj" type="number" inputmode="decimal" value="0" min="-5" max="20" step="0.01"></label>
+      </div>
+      <p class="hint">Manufacturer fuel use is usually lower than real driving. Change it to match your own figures. Your vehicle isn't listed? Type your own fuel use and tank size.</p>
+    </section>
+
+    <section class="card" aria-labelledby="h-cost">
+      <h2 id="h-cost">What you pay</h2>
+      <p class="summary" id="litres"></p>
+      <div class="scroll">
+        <table class="tbl" id="costTbl">
+          <thead><tr><th scope="col"><span class="sr">Period</span></th><th scope="col">Before</th><th scope="col">Now</th><th scope="col">Extra</th></tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card whatif" aria-labelledby="h-next">
+      <h2 id="h-next">What if next month moves again?</h2>
+      <label for="nxt">Change per litre (R, use a minus for a drop)<input id="nxt" type="number" inputmode="decimal" value="1" min="-10" max="10" step="0.1"></label>
+      <div class="out" id="nxtOut"></div>
+      <p class="hint" id="nxtNote"></p>
+    </section>
+
+    <section class="prose" aria-labelledby="h-prices">
+      <h2 id="h-prices">Current South African fuel prices</h2>
+<!--PRICES:START-->
+<p>Prices apply from <strong>Wednesday 7 October 2026</strong>, in rand per litre.</p>
+<div class="scroll"><table class="tbl pt">
+<caption class="sr">South African fuel prices, October 2026</caption>
+<thead><tr><th scope="col">Fuel</th><th scope="col">Inland</th><th scope="col">Coast</th><th scope="col">Change (inland)</th></tr></thead>
+<tbody>
+<tr><th scope="row">Petrol 95</th><td>R30.25</td><td>R29.38</td><td>+R3.33</td></tr>
+<tr><th scope="row">Petrol 93</th><td>R29.88</td><td>Not sold</td><td>+R3.12</td></tr>
+<tr><th scope="row">Diesel 50ppm (wholesale)</th><td>R33.29</td><td>R32.03</td><td>+R3.24</td></tr>
+<tr><th scope="row">Diesel 500ppm (wholesale)</th><td>R31.95</td><td>R31.08</td><td>+R2.84</td></tr>
+</tbody></table></div>
+<!--PRICES:END-->
+      <p class="hint">Diesel prices are wholesale. Garages add their own margin, so your pump price will differ.</p>
+    </section>
+
+    <section class="prose" aria-labelledby="h-faq">
+      <h2 id="h-faq">Questions about fuel prices</h2>
+      <details>
+        <summary>When do South African fuel prices change?</summary>
+        <p>Petrol and diesel prices are adjusted on the first Wednesday of every month. The Department of Mineral and Petroleum Resources announces the change a few days earlier. Pump Check switches to the new prices on the day they take effect.</p>
+      </details>
+      <details>
+        <summary>Why are diesel prices shown as wholesale?</summary>
+        <p>The government sets the wholesale diesel price only. Garages add their own margin, so the pump price differs from station to station. Add your garage's extra rand per litre in the calculator to match your receipt.</p>
+      </details>
+      <details>
+        <summary>How does Pump Check work out my fuel cost?</summary>
+        <p>It multiplies the litres you use by the price per litre. Litres come from your distance and your vehicle's fuel use in litres per 100 km. The "Before" column uses the price from the previous adjustment, so the "Extra" column shows what the increase costs you.</p>
+      </details>
+      <details>
+        <summary>What is the difference between inland and coastal prices?</summary>
+        <p>Fuel is cheaper at the coast because it costs less to transport. Gauteng and other inland areas pay the inland price. Petrol 93 is sold inland only.</p>
+      </details>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <p>Prices come from the official adjustments published by the <a href="https://www.dmpr.gov.za/Branches/Petroleum-Resources/Fuel-Prices" rel="noopener noreferrer">Department of Mineral and Petroleum Resources</a>. Vehicle fuel use is the manufacturer's approximate combined figure. Results are estimates, not advice.</p>
+    <p id="updated"></p>
+    <p>Pump Check stores nothing on a server. Your vehicle and settings stay in your own browser.</p>
+  </footer>
+</div>
+<noscript><p class="ns">The calculator needs JavaScript. The current fuel prices are listed above.</p></noscript>
+<script src="app.js" defer></script>
+</body>
+</html>
