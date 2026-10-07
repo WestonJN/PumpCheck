@@ -1,0 +1,98 @@
+name: Update prices and deploy
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '30 3 * * *'
+  workflow_dispatch:
+    inputs:
+      effective: { description: 'Manual prices: date they apply from (YYYY-MM-DD). Leave empty for automatic.', required: false }
+      p95_in: { description: 'Petrol 95 inland (R/l)', required: false }
+      p95_co: { description: 'Petrol 95 coast (R/l)', required: false }
+      p93_in: { description: 'Petrol 93 inland (R/l)', required: false }
+      d50_in: { description: 'Diesel 50ppm inland (R/l)', required: false }
+      d50_co: { description: 'Diesel 50ppm coast (R/l)', required: false }
+      d500_in: { description: 'Diesel 500ppm inland (R/l)', required: false }
+      d500_co: { description: 'Diesel 500ppm coast (R/l)', required: false }
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Run tests
+        run: node scripts/test.mjs
+
+      - name: Get new prices
+        env:
+          MANUAL_EFFECTIVE: ${{ inputs.effective }}
+          P95_IN: ${{ inputs.p95_in }}
+          P95_CO: ${{ inputs.p95_co }}
+          P93_IN: ${{ inputs.p93_in }}
+          D50_IN: ${{ inputs.d50_in }}
+          D50_CO: ${{ inputs.d50_co }}
+          D500_IN: ${{ inputs.d500_in }}
+          D500_CO: ${{ inputs.d500_co }}
+        run: node scripts/update-prices.mjs
+
+      - name: Set site address
+        env:
+          CUSTOM_URL: ${{ vars.SITE_URL }}
+        run: |
+          if [ -n "$CUSTOM_URL" ]; then URL="$CUSTOM_URL"; else
+            OWNER=$(echo "$GITHUB_REPOSITORY_OWNER" | tr '[:upper:]' '[:lower:]')
+            REPO="${GITHUB_REPOSITORY#*/}"
+            if [ "$REPO" = "$OWNER.github.io" ]; then URL="https://$OWNER.github.io"; else URL="https://$OWNER.github.io/$REPO"; fi
+          fi
+          node scripts/set-url.mjs "$URL"
+
+      - name: Update the page for search engines
+        run: node scripts/prerender.mjs
+
+      - name: Save changes
+        run: |
+          git config user.name "pump-check-bot"
+          git config user.email "pump-check-bot@users.noreply.github.com"
+          git add -A
+          if ! git diff --cached --quiet; then
+            git commit -m "Update fuel prices and page"
+            git push
+          fi
+
+      - name: Collect public files
+        run: |
+          mkdir _site
+          cp -r index.html 404.html styles.css app.js manifest.webmanifest robots.txt sitemap.xml data assets _site/
+          touch _site/.nojekyll
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
