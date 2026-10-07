@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://example.github.io/pump-check/sitemap.xml
+Sitemap: https://westonjn.github.io/PumpCheck/sitemap.xml
