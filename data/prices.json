@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "updated": "2026-10-06",
+  "source": "Department of Mineral and Petroleum Resources (DMPR)",
+  "history": [
+    {
+      "effective": "2026-10-07",
+      "prices": {
+        "p93": { "inland": 29.88, "coast": null },
+        "p95": { "inland": 30.25, "coast": 29.38 },
+        "d500": { "inland": 31.95, "coast": 31.08 },
+        "d50": { "inland": 33.29, "coast": 32.03 }
+      }
+    },
+    {
+      "effective": "2026-09-02",
+      "prices": {
+        "p93": { "inland": 26.76, "coast": null },
+        "p95": { "inland": 26.92, "coast": 26.05 },
+        "d500": { "inland": 29.11, "coast": 28.24 },
+        "d50": { "inland": 30.05, "coast": 28.79 }
+      }
+    }
+  ]
+}
