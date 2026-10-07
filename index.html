@@ -74,85 +74,83 @@
 </head>
 <body>
 <a class="skip" href="#calc">Skip to the calculator</a>
-<div class="wrap">
+<div class="page">
   <header class="top">
-    <span class="brand">Pump Check</span>
-    <span class="tag">South Africa</span>
+    <div>
+      <h1>Pump Check</h1>
+      <p class="lede">What the current South African fuel price costs your vehicle.</p>
+    </div>
+    <p class="meta" id="updated"></p>
   </header>
 
-  <main>
-    <section class="intro">
-      <h1>What the fuel price costs you</h1>
-      <p class="lede">Pick your vehicle and see what the latest petrol or diesel price means for every fill-up, month and year.</p>
-    </section>
+  <div id="stale" class="notice" role="status" hidden></div>
+  <div id="upcoming" class="notice soft" role="status" hidden></div>
 
-    <div id="stale" class="notice" role="status" hidden></div>
-    <div id="upcoming" class="notice soft" role="status" hidden></div>
-
-    <section class="board" aria-live="polite" aria-label="Selected fuel price">
-      <div class="lbl" id="boardLbl">Loading prices</div>
-      <div class="row">
-        <div class="big" id="bigPrice">R&ndash;</div>
-        <div class="delta" id="bigDelta" hidden></div>
-      </div>
-      <div class="was" id="was"></div>
-    </section>
-
-    <section class="card" id="calc" aria-labelledby="h-vehicle">
-      <h2 id="h-vehicle">Your vehicle</h2>
-      <div class="field">
-        <label for="vq">Search for your vehicle</label>
-        <div class="combo">
-          <input id="vq" type="text" role="combobox" aria-expanded="false" aria-controls="vlist" aria-autocomplete="list" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Try Hilux, Polo or Jimny" maxlength="60">
-          <ul id="vlist" role="listbox" aria-label="Matching vehicles" hidden></ul>
+  <div class="app" id="calc">
+    <div class="col">
+      <section class="panel vehicle" aria-labelledby="h-vehicle">
+        <h2 id="h-vehicle">Vehicle</h2>
+        <div class="field">
+          <label for="vq">Search</label>
+          <div class="combo">
+            <input id="vq" type="text" role="combobox" aria-expanded="false" aria-controls="vlist" aria-autocomplete="list" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Hilux, Polo, Jimny" maxlength="60">
+            <ul id="vlist" role="listbox" aria-label="Matching vehicles" hidden></ul>
+          </div>
         </div>
-      </div>
-      <p class="or">or choose from the list</p>
-      <div class="selects">
-        <label for="vmake">Make<select id="vmake"></select></label>
-        <label for="vmodel">Model<select id="vmodel"></select></label>
-        <label for="vvar">Variant<select id="vvar"></select></label>
-      </div>
-      <p class="summary" id="vsum"></p>
-    </section>
+        <div class="selects">
+          <label for="vmake">Make<select id="vmake"></select></label>
+          <label for="vmodel">Model<select id="vmodel"></select></label>
+          <label for="vvar" class="wide">Variant<select id="vvar"></select></label>
+        </div>
+        <p class="summary" id="vsum"></p>
+        <p class="hint warn" id="vwarn" hidden></p>
+      </section>
 
-    <section class="card" aria-labelledby="h-fuel">
-      <h2 id="h-fuel">Fuel and driving</h2>
-      <div class="seg" id="gradeSeg" role="group" aria-label="Fuel grade"></div>
-      <div class="seg" id="regSeg" role="group" aria-label="Region">
-        <button type="button" data-r="inland" aria-pressed="true">Inland (Gauteng)</button>
-        <button type="button" data-r="coast" aria-pressed="false">Coast</button>
-      </div>
-      <p class="hint" id="note" hidden></p>
-      <div class="fields">
-        <label for="km">Distance per month (km)<input id="km" type="number" inputmode="decimal" value="1500" min="0" max="100000"></label>
-        <label for="cons">Fuel use (l/100 km)<input id="cons" type="number" inputmode="decimal" value="5.4" min="0" max="40" step="0.1"></label>
-        <label for="tank">Tank size (litres)<input id="tank" type="number" inputmode="decimal" value="40" min="0" max="300"></label>
-        <label for="adj">Garage extra (R per litre)<input id="adj" type="number" inputmode="decimal" value="0" min="-5" max="20" step="0.01"></label>
-      </div>
-      <p class="hint">Manufacturer fuel use is usually lower than real driving. Change it to match your own figures. Your vehicle isn't listed? Type your own fuel use and tank size.</p>
-    </section>
+      <section class="panel settings" aria-labelledby="h-fuel">
+        <h2 id="h-fuel">Fuel and driving</h2>
+        <div class="seg four" id="gradeSeg" role="group" aria-label="Fuel grade"></div>
+        <div class="seg two" id="regSeg" role="group" aria-label="Region">
+          <button type="button" data-r="inland" aria-pressed="true">Inland</button>
+          <button type="button" data-r="coast" aria-pressed="false">Coast</button>
+        </div>
+        <p class="hint" id="note" hidden></p>
+        <div class="fields">
+          <label for="km">Distance a month (km)<input id="km" type="number" inputmode="decimal" value="1500" min="0" max="100000"></label>
+          <label for="cons">Fuel use (l/100 km)<input id="cons" type="number" inputmode="decimal" value="5.4" min="0" max="40" step="0.1"></label>
+          <label for="tank">Tank size (litres)<input id="tank" type="number" inputmode="decimal" value="40" min="0" max="300"></label>
+          <label for="adj">Garage extra (R/l)<input id="adj" type="number" inputmode="decimal" value="0" min="-5" max="20" step="0.01"></label>
+        </div>
+        <p class="hint">Manufacturer fuel use is usually lower than real driving, so change it to match yours. Vehicle not listed? Type your own fuel use and tank size.</p>
+      </section>
 
-    <section class="card" aria-labelledby="h-cost">
-      <h2 id="h-cost">What you pay</h2>
-      <p class="summary" id="litres"></p>
-      <div class="scroll">
-        <table class="tbl" id="costTbl">
-          <thead><tr><th scope="col"><span class="sr">Period</span></th><th scope="col">Before</th><th scope="col">Now</th><th scope="col">Extra</th></tr></thead>
-          <tbody id="rows"></tbody>
-        </table>
-      </div>
-    </section>
+    </div>
 
-    <section class="card whatif" aria-labelledby="h-next">
-      <h2 id="h-next">What if next month moves again?</h2>
-      <label for="nxt">Change per litre (R, use a minus for a drop)<input id="nxt" type="number" inputmode="decimal" value="1" min="-10" max="10" step="0.1"></label>
-      <div class="out" id="nxtOut"></div>
-      <p class="hint" id="nxtNote"></p>
-    </section>
+    <div class="col">
+      <section class="panel results" aria-labelledby="resTitle" aria-live="polite">
+        <div class="head">
+          <h2 id="resTitle">Loading prices</h2>
+          <span class="meta" id="resMeta"></span>
+        </div>
+        <div class="strip">
+          <div class="cell"><span class="k">Per litre</span><span class="v" id="vLitre">R&ndash;</span><span class="d" id="dLitre"></span></div>
+          <div class="cell"><span class="k" id="lbTank">Full tank</span><span class="v" id="vTank">R&ndash;</span><span class="d" id="dTank"></span></div>
+          <div class="cell main"><span class="k" id="lbMonth">Per month</span><span class="v" id="vMonth">R&ndash;</span><span class="d" id="dMonth"></span></div>
+          <div class="cell"><span class="k">Per year</span><span class="v" id="vYear">R&ndash;</span><span class="d" id="dYear"></span></div>
+        </div>
+        <p class="usage" id="litres"></p>
+      </section>
 
-    <section class="prose" aria-labelledby="h-prices">
-      <h2 id="h-prices">Current South African fuel prices</h2>
+      <section class="panel whatif" aria-labelledby="h-next">
+        <h2 id="h-next">If next month moves</h2>
+        <div class="inline">
+          <label for="nxt">Change (R/l)<input id="nxt" type="number" inputmode="decimal" value="1" min="-10" max="10" step="0.1"></label>
+          <div class="out" id="nxtOut"></div>
+        </div>
+        <p class="hint" id="nxtNote"></p>
+      </section>
+
+      <section class="panel prose" aria-labelledby="h-prices">
+        <h2 id="h-prices">Current fuel prices in South Africa</h2>
 <!--PRICES:START-->
 <p>Prices apply from <strong>Wednesday 7 October 2026</strong>, in rand per litre.</p>
 <div class="scroll"><table class="tbl pt">
@@ -165,11 +163,14 @@
 <tr><th scope="row">Diesel 500ppm (wholesale)</th><td>R31.95</td><td>R31.08</td><td>+R2.84</td></tr>
 </tbody></table></div>
 <!--PRICES:END-->
-      <p class="hint">Diesel prices are wholesale. Garages add their own margin, so your pump price will differ.</p>
-    </section>
+        <p class="hint">Diesel prices are wholesale. Garages add their own margin, so your pump price will differ.</p>
+      </section>
+    </div>
+  </div>
 
-    <section class="prose" aria-labelledby="h-faq">
-      <h2 id="h-faq">Questions about fuel prices</h2>
+  <section class="faq" aria-labelledby="h-faq">
+    <h2 id="h-faq">Questions about fuel prices</h2>
+    <div class="faqgrid">
       <details>
         <summary>When do South African fuel prices change?</summary>
         <p>Petrol and diesel prices are adjusted on the first Wednesday of every month. The Department of Mineral and Petroleum Resources announces the change a few days earlier. Pump Check switches to the new prices on the day they take effect.</p>
@@ -180,22 +181,20 @@
       </details>
       <details>
         <summary>How does Pump Check work out my fuel cost?</summary>
-        <p>It multiplies the litres you use by the price per litre. Litres come from your distance and your vehicle's fuel use in litres per 100 km. The "Before" column uses the price from the previous adjustment, so the "Extra" column shows what the increase costs you.</p>
+        <p>It multiplies the litres you use by the price per litre. Litres come from your distance and your vehicle's fuel use in litres per 100 km. Each figure also shows the price from the previous adjustment, so you can see what the increase costs you.</p>
       </details>
       <details>
         <summary>What is the difference between inland and coastal prices?</summary>
         <p>Fuel is cheaper at the coast because it costs less to transport. Gauteng and other inland areas pay the inland price. Petrol 93 is sold inland only.</p>
       </details>
-    </section>
-  </main>
+    </div>
+  </section>
 
   <footer class="foot">
-    <p>Prices come from the official adjustments published by the <a href="https://www.dmpr.gov.za/Branches/Petroleum-Resources/Fuel-Prices" rel="noopener noreferrer">Department of Mineral and Petroleum Resources</a>. Vehicle fuel use is the manufacturer's approximate combined figure. Results are estimates, not advice.</p>
-    <p id="updated"></p>
-    <p>Pump Check stores nothing on a server. Your vehicle and settings stay in your own browser.</p>
+    <p>Prices come from the official adjustments published by the <a href="https://www.dmpr.gov.za/Branches/Petroleum-Resources/Fuel-Prices" rel="noopener noreferrer">Department of Mineral and Petroleum Resources</a>. South African vehicle figures are approximate manufacturer combined fuel use. Other vehicles use US EPA data, which is for US-market models, with estimated tank sizes. Results are estimates, not advice. Pump Check stores nothing on a server, and your settings stay in your browser.</p>
   </footer>
 </div>
-<noscript><p class="ns">The calculator needs JavaScript. The current fuel prices are listed above.</p></noscript>
+<noscript><p class="ns">The calculator needs JavaScript. The current fuel prices are listed on this page.</p></noscript>
 <script src="app.js" defer></script>
 </body>
 </html>

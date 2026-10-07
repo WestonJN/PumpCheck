@@ -49,6 +49,10 @@ jobs:
           D500_CO: ${{ inputs.d500_co }}
         run: node scripts/update-prices.mjs
 
+      - name: Refresh vehicle list (optional)
+        run: node scripts/build-vehicles.mjs
+        continue-on-error: true
+
       - name: Set site address
         env:
           CUSTOM_URL: ${{ vars.SITE_URL }}
