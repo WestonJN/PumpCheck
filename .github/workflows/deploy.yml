@@ -49,10 +49,6 @@ jobs:
           D500_CO: ${{ inputs.d500_co }}
         run: node scripts/update-prices.mjs
 
-      - name: Refresh vehicle list (optional)
-        run: node scripts/build-vehicles.mjs
-        continue-on-error: true
-
       - name: Set site address
         env:
           CUSTOM_URL: ${{ vars.SITE_URL }}
@@ -82,6 +78,9 @@ jobs:
           mkdir _site
           cp -r index.html 404.html styles.css app.js manifest.webmanifest robots.txt sitemap.xml data assets _site/
           touch _site/.nojekyll
+
+      - name: Build pages for search engines
+        run: node scripts/build-pages.mjs _site
 
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3

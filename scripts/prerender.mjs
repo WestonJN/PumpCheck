@@ -1,6 +1,6 @@
 // Writes the latest prices into index.html as plain HTML so search engines see them without running JavaScript.
 import { readFile, writeFile } from 'node:fs/promises';
-import { MONTH_NAMES, longDate } from './lib.mjs';
+import { MONTH_NAMES, longDate, slug, esc, loadVehicles, POPULAR } from './lib.mjs';
 
 const prices = JSON.parse(await readFile('data/prices.json', 'utf8'));
 const h = [...prices.history].sort((a, b) => b.effective.localeCompare(a.effective));
@@ -32,7 +32,19 @@ ${rows}
 </tbody></table></div>
 <!--PRICES:END-->`;
 
+const vehicles = loadVehicles(JSON.parse(await readFile('data/vehicles.json', 'utf8')));
+const models = new Set(vehicles.map((v) => v.make + '|' + v.model));
+const popular = POPULAR.filter(([a, b]) => models.has(a + '|' + b))
+  .map(([a, b]) => `<li><a href="cars/${slug(a + ' ' + b)}/">${esc(a + ' ' + b)}</a></li>`).join('\n');
+const popularBlock = `<!--POPULAR:START-->
+<ul class="linklist">
+${popular}
+</ul>
+<p class="hint"><a href="cars/">All makes and models</a> · <a href="fuel-price-history/">Fuel price history</a></p>
+<!--POPULAR:END-->`;
+
 let html = await readFile('index.html', 'utf8');
+html = html.replace(/<!--POPULAR:START-->[\s\S]*?<!--POPULAR:END-->/, () => popularBlock);
 html = html.replace(/<!--PRICES:START-->[\s\S]*?<!--PRICES:END-->/, () => block);
 const title = `Petrol and Diesel Price Calculator South Africa (${monthYear}) | Pump Check`;
 const desc = `Check what South Africa's ${monthYear} petrol and diesel prices cost your car. Pick your vehicle and see your cost per fill-up, month and year.`;

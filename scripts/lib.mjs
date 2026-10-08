@@ -85,3 +85,30 @@ export function validateEntry(entry, prev) {
     }
   }
 }
+
+export function slug(text) {
+  return String(text).toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+}
+
+export function esc(text) {
+  return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+export function loadVehicles(json) {
+  return json.vehicles.map((r) => ({
+    make: r[0], model: r[1], variant: r[2], fuel: r[3], cons: r[4], tank: r[5], status: r[6] || 0, src: r[7] || '', note: r[8] || ''
+  }));
+}
+
+export function groupBy(list, keyFn) {
+  const m = new Map();
+  for (const x of list) { const k = keyFn(x); if (!m.has(k)) m.set(k, []); m.get(k).push(x); }
+  return m;
+}
+
+// Models people search for most. Used for the links on the home page.
+export const POPULAR = [
+  ['Toyota', 'Hilux'], ['Ford', 'Ranger'], ['Volkswagen', 'Polo'], ['Toyota', 'Fortuner'], ['Isuzu', 'D-Max'], ['Suzuki', 'Swift'],
+  ['Toyota', 'Corolla Cross'], ['Haval', 'Jolion'], ['Suzuki', 'Jimny'], ['Toyota', 'Starlet'], ['Hyundai', 'Creta'], ['Nissan', 'Navara'],
+  ['Ford', 'Everest'], ['Toyota', 'Quantum'], ['Kia', 'Picanto'], ['Suzuki', 'Dzire']
+];

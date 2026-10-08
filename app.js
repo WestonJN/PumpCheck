@@ -94,7 +94,6 @@
   function vLabel(v) { return v.make + ' ' + v.model + ' ' + v.variant; }
   function findVehicle(key) { for (var i = 0; i < vehicles.length; i++) { if (vKey(vehicles[i]) === key) return vehicles[i]; } return null; }
   function uniq(arr) { return arr.filter(function (x, i) { return arr.indexOf(x) === i; }); }
-  function byOrigin(a, b) { return (a.us ? 1 : 0) - (b.us ? 1 : 0); }
 
   function fillSelect(sel, items, current) {
     sel.textContent = '';
@@ -107,13 +106,11 @@
   }
   function modelsOf(make) {
     var list = vehicles.filter(function (x) { return x.make === make; });
-    var za = uniq(list.filter(function (x) { return !x.us; }).map(function (x) { return x.model; })).sort();
-    var us = uniq(list.filter(function (x) { return x.us; }).map(function (x) { return x.model; })).sort();
-    return uniq(za.concat(us));
+    return uniq(list.map(function (x) { return x.model; })).sort();
   }
   function variantsOf(make, model) {
     return vehicles.filter(function (x) { return x.make === make && x.model === model; })
-      .sort(function (a, b) { return byOrigin(a, b) || (a.variant < b.variant ? -1 : 1); })
+      .sort(function (a, b) { return a.variant < b.variant ? -1 : 1; })
       .map(function (x) { return x.variant; });
   }
   function syncSelects(v) {
@@ -144,7 +141,7 @@
       var score = hay.indexOf(terms[0]) === 0 ? 0 : (v.model.toLowerCase().indexOf(terms[0]) === 0 ? 1 : 2);
       out.push({ v: v, score: score });
     });
-    out.sort(function (a, b) { return a.score - b.score || byOrigin(a.v, b.v) || (vLabel(a.v) < vLabel(b.v) ? -1 : 1); });
+    out.sort(function (a, b) { return a.score - b.score || (vLabel(a.v) < vLabel(b.v) ? -1 : 1); });
     return out.slice(0, 10).map(function (x) { return x.v; });
   }
   function openList() { $('vlist').hidden = false; $('vq').setAttribute('aria-expanded', 'true'); }
@@ -166,7 +163,7 @@
       li.id = 'vopt' + i; li.setAttribute('role', 'option'); li.setAttribute('aria-selected', 'false');
       var a = document.createElement('span'); a.textContent = vLabel(v);
       var b = document.createElement('span'); b.className = 'tagline';
-      b.textContent = (v.fuel === 'd' ? 'Diesel' : 'Petrol') + (v.us ? ' · US spec' : '');
+      b.textContent = v.fuel === 'd' ? 'Diesel' : 'Petrol';
       li.appendChild(a); li.appendChild(b);
       li.addEventListener('mousedown', function (e) { e.preventDefault(); chooseVehicle(v); });
       list.appendChild(li);
@@ -226,6 +223,24 @@
     sub.appendChild(up);
   }
 
+  function renderSource(v) {
+    var el = $('vsrc');
+    el.textContent = '';
+    el.className = 'hint';
+    if (!v) { el.hidden = true; return; }
+    el.hidden = false;
+    var text = v.status === 2 ? 'Fuel use and tank size come from a published South African source. '
+      : v.status === 1 ? 'Fuel use comes from a published South African source. Tank size is approximate. '
+      : 'Approximate figures, not yet checked against a published source. Change them below if you know yours. ';
+    el.appendChild(document.createTextNode(text));
+    if (v.note) el.appendChild(document.createTextNode(v.note + ' '));
+    if (v.src && /^https:\/\//.test(v.src)) {
+      var a = document.createElement('a');
+      a.href = v.src; a.target = '_blank'; a.rel = 'noopener noreferrer'; a.textContent = 'View source';
+      el.appendChild(a);
+    }
+  }
+
   function render() {
     renderGradeButtons();
     var v = findVehicle(state.vehicleKey);
@@ -234,9 +249,7 @@
 
     var line = v ? vLabel(v) + ' · ' + (v.fuel === 'd' ? 'diesel' : 'petrol') + ' · ' : '';
     $('vsum').textContent = line + fmt(state.cons, 1) + ' l/100 km · ' + fmt(state.tank, 0) + ' l tank';
-    var warn = $('vwarn');
-    warn.hidden = !(v && v.us);
-    warn.textContent = v && v.us ? 'US-market figure, tank size estimated. Adjust both below if you know them.' : '';
+    renderSource(v);
 
     var note = '';
     if (state.region === 'coast' && reg === 'inland') note = 'Petrol 93 is sold inland only, so inland prices are shown.';
@@ -296,7 +309,6 @@
     });
     function pick(make, model, variant) {
       var l = vehicles.filter(function (x) { return x.make === make && (!model || x.model === model) && (!variant || x.variant === variant); });
-      l.sort(byOrigin);
       if (l[0]) chooseVehicle(l[0]);
     }
     $('vmake').addEventListener('change', function () { pick($('vmake').value); });
@@ -320,26 +332,25 @@
       return r.json();
     });
   }
-  function toVehicles(rows, us) {
+  function toVehicles(rows) {
     return (rows || []).filter(function (r) { return Array.isArray(r) && r.length >= 6 && isFinite(r[4]) && isFinite(r[5]); }).map(function (r) {
-      return { make: String(r[0]), model: String(r[1]), variant: String(r[2]), fuel: r[3] === 'd' ? 'd' : 'p', cons: Number(r[4]), tank: Number(r[5]), us: us };
+      return { make: String(r[0]), model: String(r[1]), variant: String(r[2]), fuel: r[3] === 'd' ? 'd' : 'p', cons: Number(r[4]), tank: Number(r[5]),
+        status: Number(r[6]) || 0, src: typeof r[7] === 'string' ? r[7] : '', note: typeof r[8] === 'string' ? r[8] : '' };
     });
   }
 
   function init() {
     bind();
-    var optional = getJSON('data/vehicles-epa.json').catch(function () { return { vehicles: [] }; });
-    Promise.all([getJSON('data/vehicles.json'), getJSON('data/prices.json'), optional]).then(function (res) {
-      var za = toVehicles(res[0].vehicles, false);
-      var seen = {};
-      za.forEach(function (v) { seen[(v.make + '|' + v.model).toLowerCase()] = true; });
-      var us = toVehicles(res[2].vehicles, true).filter(function (v) { return !seen[(v.make + '|' + v.model).toLowerCase()]; });
-      vehicles = za.concat(us);
+    Promise.all([getJSON('data/vehicles.json'), getJSON('data/prices.json')]).then(function (res) {
+      vehicles = toVehicles(res[0].vehicles);
       if (!validPrices(res[1])) throw new Error('Price data failed validation');
       set = pickSet(res[1]);
       load();
-      var found = findVehicle(state.vehicleKey);
-      var v = found || findVehicle('Volkswagen|Polo|1.0 TSI') || vehicles[0];
+      var linked = null;
+      try { linked = findVehicle(new URLSearchParams(window.location.search).get('v') || ''); } catch (e) { /* no query support */ }
+      var found = linked ? null : findVehicle(state.vehicleKey);
+      if (linked) state.vehicleKey = vKey(linked);
+      var v = linked || found || findVehicle('Volkswagen|Polo|1.0 TSI') || vehicles[0];
       if (v) { chooseVehicle(v, !!found); $('cons').value = state.cons; $('tank').value = state.tank; }
       $('km').value = state.km; $('adj').value = state.adj;
       render();

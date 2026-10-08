@@ -28,10 +28,24 @@ South African petrol and diesel price calculator. Static site for GitHub Pages. 
 - GitHub Pages cannot send HTTP headers such as `X-Frame-Options` or HSTS. The page includes a frame-busting script. For full headers, put Cloudflare (free) in front of a custom domain.
 - On your GitHub account: turn on two-factor sign-in, and protect `main` (Settings > Branches).
 
-## Edit vehicles
+## Vehicle data
 
-`data/vehicles.json`, one row per vehicle: `["Make","Model","Variant","p or d", litres per 100 km, tank litres]`.
-The figures are approximate manufacturer combined numbers compiled from general knowledge, not from an official database. Check them before you rely on them, and fix any that look wrong.
+`data/vehicles.json` holds South African market vehicles. Row: `["Make","Model","Variant","p or d", litres per 100 km, tank litres, status, "source URL", "note"]`.
+
+- Status 2: fuel use and tank size were read from a published South African source (the source link is in the row and shown on the page).
+- Status 1: fuel use is sourced, the tank size is approximate.
+- Status 0: both figures are approximate and still need checking. About half the rows are in this state, and the page says so for each one.
+
+No free public API exists for South African vehicle specifications. The classified sites (AutoTrader, Cars.co.za) do not offer open access, so nothing here is copied from their listings. To improve the list, replace status 0 rows with figures from the manufacturer's South African spec sheet, set status to 2 and add the source URL. For full coverage, ask a data provider such as Lightstone or TransUnion Auto for a licence.
+
+## Search pages
+
+`scripts/build-pages.mjs` writes about 160 static pages at deploy time: a page for each model (`/cars/toyota-hilux/`), each make, a make hub, a fuel price history page and the sitemap. Each page has its own title, description, breadcrumb and question data, and carries real costs worked out from the current prices.
+
+After the first deploy:
+1. Add your site in Google Search Console and submit `sitemap.xml`. Do the same in Bing Webmaster Tools.
+2. A `.co.za` or `.com` domain ranks better than `github.io`. Set the repository variable `SITE_URL` and the Pages custom domain when you have one.
+3. Ranking takes weeks and depends on competition and links. Nothing here can promise a position.
 
 ## Check locally
 

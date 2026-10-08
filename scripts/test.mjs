@@ -28,20 +28,8 @@ assert.throws(() => validateEntry({ effective: '2026-10-07', prices: { ...prices
 assert.throws(() => parsePrices('nothing useful here'));
 console.log('All tests passed');
 
-import { buildRows, estimateTank, parseCsv } from './epa.mjs';
-const csv = [
-  'make,model,year,comb08,fuelType1,VClass,displ,cylinders,atvType',
-  'Honda,"Civic, Sport",2024,35,Regular Gasoline,Compact Cars,2.0,4,',
-  'Honda,"Civic, Sport",2023,34,Regular Gasoline,Compact Cars,2.0,4,',
-  'Ford,F-150,2024,20,Regular Gasoline,Standard Pickup Trucks,3.5,6,',
-  'Ford,Ranger,2024,28,Diesel,Small Pickup Trucks,2.2,4,',
-  'Tesla,Model 3,2024,130,Electricity,Midsize Cars,0,0,EV',
-  'Old,Car,1990,20,Regular Gasoline,Compact Cars,2.0,4,'
-].join('\n');
-assert.equal(parseCsv('a,"b,c"\n1,2').length, 2);
-const rows = buildRows(csv);
-assert.equal(rows.length, 3);
-assert.deepEqual(rows.find((r) => r[1] === 'Civic, Sport'), ['Honda', 'Civic, Sport', '2.0L 4-cyl (2024)', 'p', 6.7, 50, 1]);
-assert.equal(rows.find((r) => r[1] === 'Ranger')[3], 'd');
-assert.equal(estimateTank('Standard Pickup Trucks'), 90);
-console.log('EPA tests passed');
+import { slug, esc } from './lib.mjs';
+assert.equal(slug('Land Rover Defender 110'), 'land-rover-defender-110');
+assert.equal(slug('D-Max'), 'd-max');
+assert.equal(esc('<a href="x">&</a>'), '&lt;a href=&quot;x&quot;&gt;&amp;&lt;/a&gt;');
+console.log('Helper tests passed');
